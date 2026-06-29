@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <title>Editar Reporte</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<header>
+    <h1>GeoAI-CIM Nampula</h1>
+    <p>Editar Reporte</p>
+</header>
+
+<nav>
+    <a href="/">Início</a>
+    <a href="/reportar">Reportar Problema</a>
+    <a href="/mapa">Mapa</a>
+    <a href="/dashboard">Dashboard</a>
+    <a href="/sobre">Sobre o Projeto</a>
+</nav>
+
+<div class="container">
+    <h2>Editar Reporte #{{ reporte.id }}</h2>
+
+    <form method="POST">
+        <label>Nome</label>
+        <input type="text" name="nome" value="{{ reporte.nome }}" required>
+
+        <label>Bairro</label>
+        <input type="text" name="bairro" value="{{ reporte.bairro }}" required>
+
+        <label>Tipo de Problema</label>
+        <input type="text" name="tipo_problema" value="{{ reporte.tipo_problema }}" required>
+
+        <label>Descrição</label>
+        <textarea name="descricao" rows="5" required>{{ reporte.descricao }}</textarea>
+
+        <label>Latitude</label>
+        <input type="number" step="any" name="latitude" value="{{ reporte.latitude }}" required>
+
+        <label>Longitude</label>
+        <input type="number" step="any" name="longitude" value="{{ reporte.longitude }}" required>
+
+        <label>Estado</label>
+        <select name="estado" required>
+            <option value="Pendente" {% if reporte.estado == "Pendente" %}selected{% endif %}>Pendente</option>
+            <option value="Em análise" {% if reporte.estado == "Em análise" %}selected{% endif %}>Em análise</option>
+            <option value="Resolvido" {% if reporte.estado == "Resolvido" %}selected{% endif %}>Resolvido</option>
+        </select>
+
+        <button class="btn" type="submit">Guardar Alterações</button>
+    </form>
+
+    <p style="margin-top:20px;">
+        <a class="btn" href="/dashboard">← Voltar ao Dashboard</a>
+    </p>
+</div>
+
+<footer>
+    GeoAI-CIM Nampula © 2026
+</footer>
+
+</body>
+</html>

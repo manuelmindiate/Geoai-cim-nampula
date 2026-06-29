@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <title>Mapa Urbano Inteligente - GeoAI-CIM Nampula</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Leaflet -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+
+    <style>
+        *{
+            box-sizing:border-box;
+            margin:0;
+            padding:0;
+            font-family:Arial, Helvetica, sans-serif;
+        }
+
+        body{
+            background:#f1f5f9;
+            color:#0f172a;
+        }
+
+        .topbar{
+            background:linear-gradient(135deg,#0f172a,#1d4ed8);
+            color:white;
+            padding:22px 28px;
+            box-shadow:0 8px 24px rgba(15,23,42,0.18);
+        }
+
+        .topbar h1{
+            font-size:28px;
+            margin-bottom:8px;
+        }
+
+        .topbar p{
+            max-width:980px;
+            line-height:1.7;
+            font-size:15px;
+            color:#e2e8f0;
+        }
+
+        .container{
+            width:min(1400px, 95%);
+            margin:24px auto;
+        }
+
+        .summary-grid{
+            display:grid;
+            grid-template-columns:repeat(auto-fit, minmax(220px,1fr));
+            gap:16px;
+            margin-bottom:20px;
+        }
+
+        .summary-card{
+            background:white;
+            border-radius:18px;
+            padding:18px;
+            border:1px solid #e2e8f0;
+            box-shadow:0 8px 20px rgba(15,23,42,0.06);
+        }
+
+        .summary-card h3{
+            font-size:14px;
+            color:#475569;
+            margin-bottom:10px;
+            font-weight:600;
+        }
+
+        .summary-card .value{
+            font-size:28px;
+            font-weight:800;
+            color:#0f172a;
+        }
+
+        .map-layout{
+            display:grid;
+            grid-template-columns:320px 1fr;
+            gap:20px;
+        }
+
+        .sidebar{
+            display:flex;
+            flex-direction:column;
+            gap:18px;
+        }
+
+        .panel{
+            background:white;
+            border-radius:20px;
+            padding:20px;
+            border:1px solid #e2e8f0;
+            box-shadow:0 8px 20px rgba(15,23,42,0.06);
+        }
+
+        .panel h2{
+            font-size:18px;
+            margin-bottom:14px;
+            color:#0f172a;
+        }
+
+        .panel p{
+            font-size:14px;
+            color:#475569;
+            line-height:1.7;
+            margin-bottom:10px;
+        }
+
+        .legend-item{
+            display:flex;
+            align-items:center;
+            gap:10px;
+            margin-bottom:12px;
+            font-size:14px;
+            color:#334155;
+        }
+
+        .dot{
+            width:14px;
+            height:14px;
+            border-radius:50%;
+            display:inline-block;
+        }
+
+        .dot-red{ background:#dc2626; }
+        .dot-orange{ background:#f59e0b; }
+        .dot-green{ background:#16a34a; }
+        .dot-blue{ background:#2563eb; }
+        .dot-purple{ background:#7c3aed; }
+
+        .legend-box{
+            width:18px;
+            height:18px;
+            border-radius:5px;
+            display:inline-block;
+            border:1px solid rgba(0,0,0,0.15);
+        }
+
+        .box-critico{ background:#ef4444; }
+        .box-alto{ background:#f97316; }
+        .box-medio{ background:#facc15; }
+        .box-baixo{ background:#22c55e; }
+
+        .map-card{
+            background:white;
+            border-radius:22px;
+            overflow:hidden;
+            border:1px solid #e2e8f0;
+            box-shadow:0 8px 24px rgba(15,23,42,0.08);
+        }
+
+        .map-header{
+            padding:18px 22px;
+            border-bottom:1px solid #e2e8f0;
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            gap:12px;
+            flex-wrap:wrap;
+        }
+
+        .map-header h2{
+            font-size:20px;
+            color:#0f172a;
+        }
+
+        .map-header p{
+            color:#64748b;
+            font-size:14px;
+        }
+
+        .map-actions{
+            display:flex;
+            gap:10px;
+            flex-wrap:wrap;
+        }
+
+        .btn{
+            display:inline-block;
+            text-decoration:none;
+            border:none;
+            padding:10px 16px;
+            border-radius:12px;
+            font-size:14px;
+            font-weight:700;
+            cursor:pointer;
+        }
+
+        .btn-primary{
+            background:#2563eb;
+            color:white;
+        }
+
+        .btn-secondary{
+            background:#e2e8f0;
+            color:#0f172a;
+        }
+
+        #map{
+            width:100%;
+            height:78vh;
+            min-height:620px;
+        }
+
+        .leaflet-popup-content{
+            margin:12px 14px;
+        }
+
+        .popup-title{
+            font-size:18px;
+            font-weight:800;
+            margin-bottom:10px;
+            color:#0f172a;
+        }
+
+        .popup-section{
+            margin-bottom:10px;
+        }
+
+        .popup-section p{
+            margin:4px 0;
+            font-size:13px;
+            line-height:1.5;
+            color:#334155;
+        }
+
+        .popup-divider{
+            margin:10px 0;
+            border:none;
+            border-top:1px solid #e2e8f0;
+        }
+
+        @media (max-width: 1100px){
+            .map-layout{
+                grid-template-columns:1fr;
+            }
+
+            .sidebar{
+                order:2;
+            }
+
+            .map-card{
+                order:1;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="topbar">
+        <h1>🗺️ Mapa Urbano Inteligente — GeoAI-CIM Nampula</h1>
+        <p>
+            Visualização integrada dos reportes urbanos e das zonas analisadas pelo sistema.
+            O mapa combina participação cidadã, indicadores urbanos e análise inteligente do crescimento territorial,
+            permitindo identificar áreas críticas, prioridades de intervenção e tendências de pressão urbana.
+        </p>
+    </div>
+
+    <div class="container">
+
+        <div class="summary-grid">
+            <div class="summary-card">
+                <h3>Total de Reportes</h3>
+                <div class="value">{{ reportes_geojson.features|length }}</div>
+            </div>
+
+            <div class="summary-card">
+                <h3>Total de Zonas</h3>
+                <div class="value">{{ zonas_geojson.features|length }}</div>
+            </div>
+
+            <div class="summary-card">
+                <h3>Camadas Ativas</h3>
+                <div class="value">2</div>
+            </div>
+
+            <div class="summary-card">
+                <h3>Análise Territorial</h3>
+                <div class="value">IA + GIS</div>
+            </div>
+        </div>
+
+        <div class="map-layout">
+            <div class="sidebar">
+
+                <div class="panel">
+                    <h2>📌 Como ler o mapa</h2>
+                    <p>
+                        Os <strong>marcadores</strong> representam reportes urbanos feitos pelos cidadãos,
+                        enquanto os <strong>polígonos</strong> representam zonas urbanas analisadas pelo sistema.
+                    </p>
+                    <p>
+                        Ao clicar numa zona, o sistema mostra o <strong>Índice Final</strong>,
+                        o <strong>Ajuste IA</strong>, a <strong>previsão de risco</strong>
+                        e os <strong>sinais urbanos/satelitais</strong> associados.
+                    </p>
+                </div>
+
+                <div class="panel">
+                    <h2>🚨 Legenda dos Reportes</h2>
+
+                    <div class="legend-item">
+                        <span class="dot dot-red"></span>
+                        <span>Prioridade Alta</span>
+                    </div>
+
+                    <div class="legend-item">
+                        <span class="dot dot-orange"></span>
+                        <span>Prioridade Média</span>
+                    </div>
+
+                    <div class="legend-item">
+                        <span class="dot dot-green"></span>
+                        <span>Prioridade Baixa</span>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <h2>🏙️ Legenda das Zonas</h2>
+
+                    <div class="legend-item">
+                        <span class="legend-box box-critico"></span>
+                        <span>Crescimento Crítico</span>
+                    </div>
+
+                    <div class="legend-item">
+                        <span class="legend-box box-alto"></span>
+                        <span>Crescimento Alto</span>
+                    </div>
+
+                    <div class="legend-item">
+                        <span class="legend-box box-medio"></span>
+                        <span>Crescimento Moderado</span>
+                    </div>
+
+                    <div class="legend-item">
+                        <span class="legend-box box-baixo"></span>
+                        <span>Crescimento Baixo</span>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <h2>📍 Centro inicial do mapa</h2>
+                    <p>
+                        O mapa abre centrado em <strong>Nampula</strong>.  
+                        Se tiveres zonas e reportes espalhados, podes usar zoom e arrastar o mapa para explorar.
+                    </p>
+                </div>
+
+            </div>
+
+            <div class="map-card">
+                <div class="map-header">
+                    <div>
+                        <h2>Mapa de Reportes e Zonas Urbanas</h2>
+                        <p>Visualização espacial do protótipo GeoAI-CIM Nampula</p>
+                    </div>
+
+                    <div class="map-actions">
+    <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">← Voltar ao Dashboard</a>
+    <a href="{{ url_for('dashboard') }}" class="btn btn-primary">Dashboard</a>
+</div>
+                </div>
+
+                <div id="map"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Leaflet -->
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+    <script>
+        // ==============================
+        // DADOS VINDOS DO FLASK
+        // ==============================
+        const reportesData = {{ reportes_geojson|tojson }};
+        const zonasData = {{ zonas_geojson|tojson }};
+
+L.geoJSON(zonasGeoJSON, {
+    style: function(feature) {
+        return {
+            color: cor(feature.properties.indice_final),
+            weight: 2,
+            fillOpacity: 0.5
+        };
+    },
+    onEachFeature: function(feature, layer) {
+        layer.bindPopup(`
+            <b>Zona:</b> ${feature.properties.nome}<br>
+            <b>Índice:</b> ${feature.properties.indice_final}<br>
+            <b>Estado:</b> ${feature.properties.estado_crescimento}<br>
+            <b>Risco:</b> ${feature.properties.nivel_crescimento}
+        `);
+    }
+}).addTo(map);
+
+L.geoJSON(reportesGeoJSON, {
+    pointToLayer: function(feature, latlng) {
+        return L.circleMarker(latlng, {
+            radius: 6,
+            color: "blue",
+            fillOpacity: 0.7
+        });
+    },
+    onEachFeature: function(feature, layer) {
+        layer.bindPopup(`
+            <b>Problema:</b> ${feature.properties.tipo_problema}<br>
+            <b>Prioridade:</b> ${feature.properties.prioridade}<br>
+            <b>IA:</b> ${feature.properties.alerta_ia}
+        `);
+    }
+}).addTo(map);
+
+        // ==============================
+        // MAPA BASE
+        // ==============================
+        const map = L.map('map').setView([-15.1165, 39.2666], 12);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(map);
+
+        // ==============================
+        // FUNÇÕES AUXILIARES
+        // ==============================
+        function corPrioridade(prioridade){
+            const p = (prioridade || "").toLowerCase().trim();
+            if (p === "alta") return "#dc2626";
+            if (p === "média" || p === "media") return "#f59e0b";
+            return "#16a34a";
+        }
+
+        function cor(nivel) {
+            if (!nivel) return "blue";
+            nivel = nivel.toLowerCase();
+
+            if (nivel.includes("crítico")) return "red";
+            if (nivel.includes("alto")) return "orange";
+            if (nivel.includes("médio")) return "yellow";
+            return "green";
+        }
+
+        function cor(indice) {
+            if (indice >= 80) return "red";
+            if (indice >= 60) return "orange";
+            if (indice >= 40) return "yellow";
+            return "green";
+        }
+
+        function corZona(classe){
+            const c = (classe || "").toLowerCase().trim();
+
+            if (c.includes("crítico") || c.includes("critico")) return "#ef4444";
+            if (c.includes("alto")) return "#f97316";
+            if (c.includes("moderado")) return "#facc15";
+            return "#22c55e";
+        }
+
+        function safe(value){
+            if (value === null || value === undefined || value === "") return "-";
+            return value;
+        }
+
+        // ==============================
+        // CAMADA DE REPORTES
+        // ==============================
+        const reportesLayer = L.geoJSON(reportesData, {
+            pointToLayer: function(feature, latlng){
+                const props = feature.properties || {};
+                return L.circleMarker(latlng, {
+                    radius: 8,
+                    fillColor: corPrioridade(props.prioridade),
+                    color: "#ffffff",
+                    weight: 2,
+                    opacity: 1,
+                    fillOpacity: 0.95
+                });
+            },
+
+            onEachFeature: function(feature, layer){
+                const p = feature.properties || {};
+
+                layer.bindPopup(`
+                    <div style="min-width:250px;">
+                        <div class="popup-title">📍 Reporte #${safe(p.id)}</div>
+
+                        <div class="popup-section">
+                            <p><strong>Nome:</strong> ${safe(p.nome)}</p>
+                            <p><strong>Bairro:</strong> ${safe(p.bairro)}</p>
+                            <p><strong>Problema:</strong> ${safe(p.tipo_problema)}</p>
+                            <p><strong>Descrição:</strong> ${safe(p.descricao)}</p>
+                        </div>
+
+                        <hr class="popup-divider">
+
+                        <div class="popup-section">
+                            <p><strong>Prioridade:</strong> ${safe(p.prioridade)}</p>
+                            <p><strong>Nível de risco:</strong> ${safe(p.nivel_risco)}</p>
+                            <p><strong>Alerta IA:</strong> ${safe(p.alerta_ia)}</p>
+                        </div>
+
+                        <hr class="popup-divider">
+
+                        <div class="popup-section">
+                            <p><strong>Setor responsável:</strong> ${safe(p.setor_responsavel)}</p>
+                            <p><strong>Ação recomendada:</strong> ${safe(p.acao_recomendada)}</p>
+                            <p><strong>Estado:</strong> ${safe(p.estado)}</p>
+                            <p><strong>Data:</strong> ${safe(p.data)}</p>
+                        </div>
+                    </div>
+                `);
+            }
+        }).addTo(map);
+
+        // ==============================
+        // CAMADA DE ZONAS
+        // ==============================
+        const zonasLayer = L.geoJSON(zonasData, {
+            style: function(feature){
+                const props = feature.properties || {};
+                return {
+                    color: corZona(props.classe_crescimento),
+                    weight: 2,
+                    fillColor: corZona(props.classe_crescimento),
+                    fillOpacity: 0.35
+                };
+            },
+
+            onEachFeature: function(feature, layer){
+                const p = feature.properties || {};
+
+                layer.bindPopup(`
+                    <div style="min-width:280px;">
+                        <div class="popup-title">🏙️ ${safe(p.nome)}</div>
+
+                        <div class="popup-section">
+                            <p><strong>Índice Final:</strong> ${safe(p.indice_final ?? p.indice_crescimento)}</p>
+                            <p><strong>Índice Manual:</strong> ${safe(p.indice_manual)}</p>
+                            <p><strong>Ajuste IA:</strong> ${safe(p.ajuste_ia)}</p>
+                        </div>
+
+                        <hr class="popup-divider">
+
+                        <div class="popup-section">
+                            <p><strong>Classe:</strong> ${safe(p.classe_crescimento)}</p>
+                            <p><strong>Nível:</strong> ${safe(p.nivel_crescimento)}</p>
+                            <p><strong>Estado:</strong> ${safe(p.estado_crescimento)}</p>
+                            <p><strong>Alerta:</strong> ${safe(p.alerta_urbano)}</p>
+                        </div>
+
+                        <hr class="popup-divider">
+
+                        <div class="popup-section">
+                            <p><strong>Pressão de reportes:</strong> ${safe(p.pressao_reportes)}</p>
+                            <p><strong>Previsão de risco:</strong> ${safe(p.previsao_risco)}</p>
+                            <p><strong>Fonte da análise:</strong> ${safe(p.fonte_analise)}</p>
+                        </div>
+
+                        <hr class="popup-divider">
+
+                        <div class="popup-section">
+                            <p><strong>Sinal satélite:</strong> ${safe(p.sinal_satelite)}</p>
+                            <p><strong>Sinal sensor:</strong> ${safe(p.sinal_sensor)}</p>
+                            <p><strong>Ação recomendada:</strong> ${safe(p.acao_recomendada_zona)}</p>
+                        </div>
+                    </div>
+                `);
+            }
+        }).addTo(map);
+
+        // ==============================
+        // AJUSTAR VISÃO DO MAPA
+        // ==============================
+        const group = L.featureGroup([reportesLayer, zonasLayer]);
+
+        setTimeout(() => {
+            try{
+                if (group.getLayers().length > 0) {
+                    map.fitBounds(group.getBounds(), { padding: [30, 30] });
+                }
+            }catch(e){
+                console.log("Não foi possível ajustar os limites do mapa automaticamente.");
+            }
+        }, 300);
+
+        // ==============================
+        // CONTROLO DE CAMADAS
+        // ==============================
+        const overlayMaps = {
+            "Reportes Urbanos": reportesLayer,
+            "Zonas Urbanas": zonasLayer
+        };
+
+        L.control.layers(null, overlayMaps, { collapsed: false }).addTo(map);
+    </script>
+
+</body>
+</html>

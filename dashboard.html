@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard — GeoAI-CIM Nampula</title>
+    <style>
+        *{
+            box-sizing:border-box;
+            margin:0;
+            padding:0;
+            font-family:Arial, Helvetica, sans-serif;
+        }
+
+        body{
+            background:#f4f7fb;
+            color:#1f2937;
+        }
+
+        .topbar{
+            background:#0f172a;
+            color:white;
+            padding:18px 24px;
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            flex-wrap:wrap;
+            gap:12px;
+        }
+
+        .topbar h1{
+            font-size:24px;
+        }
+
+        .nav-links{
+            display:flex;
+            flex-wrap:wrap;
+            gap:10px;
+        }
+
+        .nav-links a{
+            text-decoration:none;
+            color:white;
+            background:#1e293b;
+            padding:10px 14px;
+            border-radius:10px;
+            font-size:14px;
+            transition:0.25s;
+        }
+
+        .nav-links a:hover{
+            background:#334155;
+        }
+
+        .container{
+            width:min(1450px, 95%);
+            margin:24px auto 40px;
+        }
+
+        .page-intro{
+            background:white;
+            border-radius:20px;
+            padding:24px;
+            box-shadow:0 8px 25px rgba(0,0,0,0.08);
+            margin-bottom:22px;
+        }
+
+        .page-intro h2{
+            font-size:24px;
+            margin-bottom:10px;
+            color:#0f172a;
+        }
+
+        .page-intro p{
+            color:#475569;
+            line-height:1.7;
+            font-size:15px;
+        }
+
+        .stats-grid{
+            display:grid;
+            grid-template-columns:repeat(auto-fit, minmax(220px,1fr));
+            gap:16px;
+            margin:20px 0 28px;
+        }
+
+        .stat-card{
+            background:white;
+            border-radius:18px;
+            padding:20px;
+            box-shadow:0 8px 24px rgba(0,0,0,0.08);
+            border:1px solid #e5e7eb;
+        }
+
+        .stat-card h3{
+            font-size:15px;
+            color:#334155;
+            margin-bottom:10px;
+        }
+
+        .stat-card p{
+            font-size:30px;
+            font-weight:bold;
+            color:#0f172a;
+            margin-bottom:8px;
+        }
+
+        .stat-card span{
+            font-size:13px;
+            color:#64748b;
+            line-height:1.5;
+        }
+
+        .section-card{
+            background:white;
+            border-radius:20px;
+            padding:22px;
+            box-shadow:0 8px 25px rgba(0,0,0,0.08);
+            margin-bottom:24px;
+            overflow-x:auto;
+        }
+
+        .section-card h2{
+            font-size:22px;
+            margin-bottom:8px;
+            color:#0f172a;
+        }
+
+        .section-card p{
+            color:#64748b;
+            margin-bottom:18px;
+            line-height:1.6;
+            font-size:14px;
+        }
+
+        table{
+            width:100%;
+            border-collapse:collapse;
+            min-width:1100px;
+            background:white;
+        }
+
+        thead{
+            background:#e2e8f0;
+        }
+
+        th, td{
+            padding:12px 14px;
+            text-align:left;
+            border-bottom:1px solid #e5e7eb;
+            vertical-align:top;
+            font-size:14px;
+        }
+
+        th{
+            color:#0f172a;
+            font-size:14px;
+        }
+
+        tbody tr:hover{
+            background:#f8fafc;
+        }
+
+        .badge{
+            display:inline-block;
+            padding:6px 10px;
+            border-radius:999px;
+            font-size:12px;
+            font-weight:bold;
+        }
+
+        .alta{
+            background:#fee2e2;
+            color:#b91c1c;
+        }
+
+        .media{
+            background:#ffedd5;
+            color:#c2410c;
+        }
+
+        .baixa{
+            background:#dcfce7;
+            color:#166534;
+        }
+
+        .critico{
+            background:#fee2e2;
+            color:#b91c1c;
+        }
+
+        .alto{
+            background:#ffedd5;
+            color:#c2410c;
+        }
+
+        .medio{
+            background:#fef9c3;
+            color:#854d0e;
+        }
+
+        .baixo{
+            background:#dcfce7;
+            color:#166534;
+        }
+
+        .footer-note{
+            background:#eff6ff;
+            border:1px solid #bfdbfe;
+            border-radius:16px;
+            padding:18px;
+            color:#1e3a8a;
+            font-size:14px;
+            line-height:1.7;
+        }
+
+        .muted{
+            color:#94a3b8;
+            font-style:italic;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="topbar">
+        <h1>📊 Dashboard Urbano — GeoAI-CIM Nampula</h1>
+        <div class="nav-links">
+            <a href="/">Início</a>
+            <a href="/mapa">Mapa</a>
+            <a href="/reportar">Novo Reporte</a>
+            <a href="/adicionar_zona">Adicionar Zona</a>
+        </div>
+    </div>
+
+<div style="background:#111;color:#0f0;padding:15px;border-radius:10px;">
+    <h2> Centro de Controlo Urbano</h2>
+
+    <p><b>Score Urbano:</b> {{ score_urbano }} / 100</p>
+    <p><b>Status:</b> {{ alerta_global }}</p>
+
+    {% if score_urbano >= 80 %}
+        <p style="color:red;">🔴 SISTEMA EM ALERTA MÁXIMO</p>
+    {% elif score_urbano >= 60 %}
+        <p style="color:orange;">🟠 SISTEMA EM ALERTA MÉDIO</p>
+    {% else %}
+        <p style="color:green;">🟢 SISTEMA ESTÁVEL</p>
+    {% endif %}
+</div>
+
+<div style="background:#0b0b0b;color:#fff;padding:20px;border-radius:10px;">
+
+    <h1> Painel Executivo da Cidade</h1>
+
+    <div style="display:flex;gap:20px;">
+
+        <div>
+            <h3>📊 Reportes</h3>
+            <p>{{ total_reportes }}</p>
+        </div>
+
+        <div>
+            <h3> Zonas</h3>
+            <p>{{ total_zonas }}</p>
+        </div>
+
+        <div>
+            <h3>🔴 Críticas</h3>
+            <p>{{ zonas_criticas }}</p>
+        </div>
+
+    </div>
+
+</div>
+
+    <div class="card" style="padding:15px; margin:10px; border:1px solid #ccc;">
+         <h3> IA Urbana</h3>
+
+            <p><b>Nível:</b> {{ nivel_risco_global }}</p>
+            <p><b>Score:</b> {{ risco_global }}</p>
+            <p>{{ explicacao_risco }}</p>
+    </div>
+
+    <div class="container">
+
+        <div class="page-intro">
+            <h2>Resumo Executivo do Sistema</h2>
+            <p>
+                Este painel reúne os principais indicadores do protótipo <strong>GeoAI-CIM Nampula</strong>,
+                incluindo reportes urbanos analisados por IA e o índice de crescimento das zonas urbanas.
+                O objetivo é permitir uma leitura rápida do estado urbano, das prioridades de intervenção e das áreas com maior pressão de crescimento.
+            </p>
+        </div>
+
+<div class="card mt-4 shadow-sm">
+    <div class="card-header bg-danger text-white">
+        <h5 class="mb-0"> Alertas Urbanos Inteligentes</h5>
+    </div>
+
+    <div class="card shadow-sm mt-4">
+    <div class="card-header bg-primary text-white">
+        <h5 class="mb-0"> Top 5 Zonas Mais Críticas</h5>
+    </div>
+
+    <div class="card-body">
+
+        <table class="table table-striped table-hover">
+
+            <thead class="table-dark">
+                <tr>
+                    <th>#</th>
+                    <th>Zona</th>
+                    <th>Índice Final</th>
+                    <th>Nível</th>
+                    <th>Estado</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                {% for zona in ranking_zonas %}
+
+                <tr>
+
+                    <td>{{ loop.index }}</td>
+
+                    <td>{{ zona.nome }}</td>
+
+                    <td>{{ "%.2f"|format(zona.indice_final or 0) }}</td>
+
+                    <td>{{ zona.nivel_crescimento }}</td>
+
+                    <td>{{ zona.estado_crescimento }}</td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+</div>
+
+    <div class="card-body">
+
+        {% if alertas %}
+
+            {% for alerta in alertas %}
+
+            <div class="alert alert-warning mb-3">
+
+                <h6><strong>{{ alerta.tipo }}</strong></h6>
+
+                <p><strong>Zona:</strong> {{ alerta.zona }}</p>
+
+                <p><strong>Nível:</strong> {{ alerta.nivel }}</p>
+
+                <p>{{ alerta.mensagem }}</p>
+
+                <p>
+                    <strong>Ação recomendada:</strong>
+                    {{ alerta.acao }}
+                </p>
+
+            </div>
+
+            {% endfor %}
+
+        {% else %}
+
+            <div class="alert alert-success">
+                Nenhum alerta urbano encontrado.
+            </div>
+
+        {% endif %}
+
+    </div>
+</div>
+
+        <!-- CARDS DE ESTATÍSTICAS -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>Total de Reportes</h3>
+                <p>{{ total_reportes }}</p>
+                <span>Reportes urbanos registados no sistema</span>
+            </div>
+
+            <div class="stat-card">
+                <h3>Prioridade Alta</h3>
+                <p>{{ reportes_alta }}</p>
+                <span>Problemas urbanos urgentes</span>
+            </div>
+
+            <div class="stat-card">
+                <h3>Prioridade Média</h3>
+                <p>{{ reportes_media }}</p>
+                <span>Casos que precisam monitoramento</span>
+            </div>
+
+            <div class="stat-card">
+                <h3>Prioridade Baixa</h3>
+                <p>{{ reportes_baixa }}</p>
+                <span>Ocorrências com menor urgência</span>
+            </div>
+
+            <div class="stat-card">
+                <h3>Total de Zonas</h3>
+                <p>{{ total_zonas }}</p>
+                <span>Zonas analisadas pelo índice urbano</span>
+            </div>
+
+            <div class="stat-card">
+                <h3>Zonas Críticas/Altas</h3>
+                <p>{{ zonas_criticas }}</p>
+                <span>Zonas com pressão urbana elevada</span>
+            </div>
+
+            <div class="stat-card">
+                <h3>Média do Índice Urbano</h3>
+                <p>{{ media_indice }}</p>
+                <span>Valor médio do crescimento urbano</span>
+            </div>
+
+            <div class="stat-card">
+                <h3>Zona Mais Crítica</h3>
+                <p>{{ nome_zona_critica }}</p>
+                <span>Índice: {{ indice_zona_critica }}</span>
+            </div>
+        </div>
+
+        <!-- TABELA DE REPORTES -->
+        <div class="section-card">
+            <h2> Reportes Urbanos</h2>
+            <p>Lista de problemas reportados pelos cidadãos, já analisados pelo módulo de IA urbana.</p>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nome</th>
+                        <th>Bairro</th>
+                        <th>Problema</th>
+                        <th>Descrição</th>
+                        <th>Alerta IA</th>
+                        <th>Prioridade</th>
+                        <th>Nível de Risco</th>
+                        <th>Setor Responsável</th>
+                        <th>Ação Recomendada</th>
+                        <th>Estado</th>
+                        <th>Data</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for r in reportes %}
+                    <tr>
+                        <td>{{ r.id }}</td>
+                        <td>{{ r.nome or "-" }}</td>
+                        <td>{{ r.bairro or "-" }}</td>
+                        <td>{{ r.tipo_problema or "-" }}</td>
+                        <td>{{ r.descricao or "-" }}</td>
+                        <td>{{ r.alerta_ia or "-" }}</td>
+
+                        <td>
+                            {% set pr = (r.prioridade or "")|lower %}
+                            {% if pr == "alta" %}
+                                <span class="badge alta">{{ r.prioridade }}</span>
+                            {% elif pr == "média" or pr == "media" %}
+                                <span class="badge media">{{ r.prioridade }}</span>
+                            {% elif pr == "baixa" %}
+                                <span class="badge baixa">{{ r.prioridade }}</span>
+                            {% else %}
+                                {{ r.prioridade or "-" }}
+                            {% endif %}
+                        </td>
+
+                        <td>{{ r.nivel_risco or "-" }}</td>
+                        <td>{{ r.setor_responsavel or "-" }}</td>
+                        <td>{{ r.acao_recomendada or "-" }}</td>
+                        <td>{{ r.estado or "-" }}</td>
+                        <td>{{ r.data or "-" }}</td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="12" class="muted">Nenhum reporte registado ainda.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- TABELA DE ZONAS -->
+        <div class="section-card">
+            <h2>📈 Índice de Crescimento por Zona</h2>
+            <p>Monitorização das zonas urbanas com base no índice de crescimento, classe, nível e ação recomendada.</p>
+
+            <table>
+                <thead>
+                    <tr>
+    <th>Zona</th>
+    <th>Cresc. Pop.</th>
+    <th>Novas Const.</th>
+    <th>Infraestruturas</th>
+    <th>Ocupação do Solo</th>
+    <th>Índice Manual</th>
+    <th>Ajuste IA</th>
+    <th>Índice Final</th>
+    <th>Classe</th>
+    <th>Nível</th>
+    <th>Pressão de Reportes</th>
+    <th>Previsão de Risco</th>
+    <th>Fonte da Análise</th>
+    <th>Sinal Satélite</th>
+    <th>Sinal Sensor</th>
+    <th>Ação Recomendada</th>
+</tr>
+                </thead>
+                <tbody>
+    {% for z in zonas %}
+    <tr>
+        <td>{{ z.nome }}</td>
+        <td>{{ z.crescimento_populacional }}</td>
+        <td>{{ z.novas_construcoes }}</td>
+        <td>{{ z.infraestruturas }}</td>
+        <td>{{ z.ocupacao_solo }}</td>
+
+        <td>{{ z.indice_manual or z.indice_crescimento or "-" }}</td>
+        <td>{{ z.ajuste_ia or "-" }}</td>
+        <td><strong>{{ z.indice_final or z.indice_crescimento or "-" }}</strong></td>
+
+        <td>{{ z.classe_crescimento or "-" }}</td>
+
+        <td>
+            {% set nv = (z.nivel_crescimento or "")|lower %}
+            {% if nv == "crítico" or nv == "critico" %}
+                <span class="badge critico">{{ z.nivel_crescimento }}</span>
+            {% elif nv == "alto" %}
+                <span class="badge alto">{{ z.nivel_crescimento }}</span>
+            {% elif nv == "médio" or nv == "medio" %}
+                <span class="badge medio">{{ z.nivel_crescimento }}</span>
+            {% elif nv == "baixo" %}
+                <span class="badge baixo">{{ z.nivel_crescimento }}</span>
+            {% else %}
+                {{ z.nivel_crescimento or "-" }}
+            {% endif %}
+        </td>
+
+        <td>{{ z.pressao_reportes or "-" }}</td>
+        <td>{{ z.previsao_risco or "-" }}</td>
+        <td>{{ z.fonte_analise or "-" }}</td>
+        <td>{{ z.sinal_satelite or "-" }}</td>
+        <td>{{ z.sinal_sensor or "-" }}</td>
+        <td>{{ z.acao_recomendada_zona or "-" }}</td>
+    </tr>
+    {% else %}
+    <tr>
+        <td colspan="16" class="muted">Nenhuma zona registada ainda.</td>
+    </tr>
+    {% endfor %}
+</tbody>
+            </table>
+        </div>
+
+        <div class="footer-note">
+            <strong>Leitura rápida do painel:</strong><br>
+            • Reportes com prioridade <strong>Alta</strong> indicam necessidade de intervenção urgente.<br>
+            • Zonas com nível <strong>Alto</strong> ou <strong>Crítico</strong> merecem maior atenção no planeamento urbano.<br>
+            • A combinação entre mapa, IA urbana e índice de crescimento transforma o sistema num painel inteligente de apoio à decisão municipal.
+        </div>
+
+    </div>
+
+</body>
+</html>

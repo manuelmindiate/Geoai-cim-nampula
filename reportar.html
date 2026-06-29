@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <title>Reportar Problema</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        *{box-sizing:border-box;font-family:Arial,Helvetica,sans-serif}
+        body{margin:0;background:#f4f7fb;color:#1f2937}
+        .topbar{background:linear-gradient(90deg,#0f4c81,#1677b3);color:white;padding:22px 30px}
+        .container{width:95%;max-width:1000px;margin:30px auto}
+        .menu{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:25px}
+        .menu a{text-decoration:none;background:#0f4c81;color:white;padding:10px 16px;border-radius:10px;font-weight:bold}
+        .box{background:white;border-radius:14px;padding:25px;box-shadow:0 4px 14px rgba(0,0,0,0.08)}
+        .form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px}
+        .field label{display:block;font-weight:bold;margin-bottom:7px}
+        .field input,.field select,.field textarea{width:100%;padding:11px;border:1px solid #cbd5e1;border-radius:10px;font-size:14px}
+        .full{grid-column:1 / -1}
+        .btn{margin-top:20px;background:#0f4c81;color:white;border:none;padding:12px 18px;border-radius:10px;font-size:15px;font-weight:bold;cursor:pointer}
+    </style>
+</head>
+<body>
+    <div class="topbar"><h1>Reportar Problema Urbano</h1></div>
+    <div class="container">
+        <div class="menu">
+            <a href="/">🏠 Início</a>
+            <a href="/dashboard">📊 Dashboard</a>
+            <a href="/mapa">🗺️ Ver Mapa</a>
+        </div>
+
+        <div class="box">
+            <form method="POST" enctype="multipart/form-data">
+                <div class="form-grid">
+                    <div class="field">
+                        <label>Nome</label>
+                        <input type="text" name="nome">
+                    </div>
+                    <div class="field">
+                        <label>Bairro</label>
+                        <input type="text" name="bairro">
+                    </div>
+                    <div class="field">
+                        <label>Tipo de problema</label>
+                        <select name="tipo_problema">
+                            <option value="">Selecione</option>
+                            <option value="Inundação">Inundação</option>
+                            <option value="Construção ilegal">Construção ilegal</option>
+                            <option value="Falta de drenagem">Falta de drenagem</option>
+                            <option value="Falta de saneamento">Falta de saneamento</option>
+                            <option value="Lixo acumulado">Lixo acumulado</option>
+                            <option value="Conflito de uso do solo">Conflito de uso do solo</option>
+                            <option value="Outro">Outro</option>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label>Foto</label>
+                        <input type="file" name="foto">
+                    </div>
+                    <div class="field">
+                        <label>Latitude</label>
+                        <input type="text" name="latitude" placeholder="-15.116">
+                    </div>
+                    <div class="field">
+                        <label>Longitude</label>
+                        <input type="text" name="longitude" placeholder="39.266">
+                    </div>
+                    <div class="field full">
+                        <label>Descrição</label>
+                        <textarea name="descricao" rows="6"></textarea>
+                    </div>
+                </div>
+                <button type="submit" class="btn">Guardar reporte</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

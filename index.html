@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GeoAI-CIM Nampula</title>
+    <style>
+        *{
+            box-sizing:border-box;
+            margin:0;
+            padding:0;
+            font-family:Arial, Helvetica, sans-serif;
+        }
+
+        body{
+            background:linear-gradient(180deg,#eef2ff 0%, #f8fafc 100%);
+            color:#0f172a;
+        }
+
+        .hero{
+            min-height:100vh;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            padding:40px 20px;
+        }
+
+        .container{
+            width:min(1200px, 95%);
+            margin:auto;
+        }
+
+        .hero-box{
+            background:white;
+            border-radius:28px;
+            box-shadow:0 20px 60px rgba(15,23,42,0.12);
+            overflow:hidden;
+        }
+
+        .top{
+            background:linear-gradient(135deg,#0f172a,#1d4ed8);
+            color:white;
+            padding:48px 32px;
+        }
+
+        .top h1{
+            font-size:42px;
+            margin-bottom:14px;
+        }
+
+        .top p{
+            font-size:18px;
+            line-height:1.7;
+            max-width:900px;
+            opacity:0.95;
+        }
+
+        .actions{
+            margin-top:26px;
+            display:flex;
+            flex-wrap:wrap;
+            gap:14px;
+        }
+
+        .btn{
+            text-decoration:none;
+            padding:14px 20px;
+            border-radius:14px;
+            font-weight:bold;
+            transition:0.25s;
+            display:inline-block;
+        }
+
+        .btn-primary{
+            background:#f8fafc;
+            color:#0f172a;
+        }
+
+        .btn-primary:hover{
+            background:#e2e8f0;
+        }
+
+        .btn-secondary{
+            background:rgba(255,255,255,0.14);
+            color:white;
+            border:1px solid rgba(255,255,255,0.25);
+        }
+
+        .btn-secondary:hover{
+            background:rgba(255,255,255,0.24);
+        }
+
+        .content{
+            padding:34px;
+        }
+
+        .section-title{
+            font-size:26px;
+            margin-bottom:10px;
+            color:#0f172a;
+        }
+
+        .section-subtitle{
+            color:#475569;
+            margin-bottom:26px;
+            line-height:1.6;
+        }
+
+        .grid{
+            display:grid;
+            grid-template-columns:repeat(auto-fit, minmax(260px,1fr));
+            gap:18px;
+            margin-bottom:34px;
+        }
+
+        .card{
+            background:#f8fafc;
+            border:1px solid #e2e8f0;
+            border-radius:20px;
+            padding:22px;
+            box-shadow:0 8px 24px rgba(15,23,42,0.05);
+        }
+
+        .card h3{
+            font-size:20px;
+            margin-bottom:12px;
+            color:#0f172a;
+        }
+
+        .card p{
+            font-size:15px;
+            color:#475569;
+            line-height:1.7;
+        }
+
+        .impact{
+            background:#eff6ff;
+            border:1px solid #bfdbfe;
+            padding:24px;
+            border-radius:20px;
+        }
+
+        .impact h3{
+            margin-bottom:12px;
+            font-size:22px;
+            color:#1d4ed8;
+        }
+
+        .impact p{
+            color:#334155;
+            line-height:1.8;
+            font-size:15px;
+        }
+
+        .footer{
+            margin-top:28px;
+            font-size:14px;
+            color:#64748b;
+            text-align:center;
+        }
+    </style>
+</head>
+<body>
+
+    <section class="hero">
+        <div class="container">
+            <div class="hero-box">
+
+                <div class="top">
+                    <h1>🌍 GeoAI-CIM Nampula</h1>
+                    <p>
+                        Plataforma inteligente de planeamento urbano para a cidade de Nampula, baseada em
+                        <strong>Gémeo Digital Urbano Participativo</strong>,
+                        <strong>IA de Alerta Urbano</strong> e
+                        <strong>Índice de Crescimento Urbano</strong>.
+                        O sistema integra dados reportados pelos cidadãos, análise automática por IA e visualização geoespacial
+                        para apoiar decisões urbanas mais rápidas, organizadas e inteligentes.
+                    </p>
+
+                    <div class="actions">
+                        <a href="/dashboard" class="btn btn-primary">📊 Abrir Dashboard</a>
+                        <a href="/mapa" class="btn btn-primary">🗺️ Abrir Mapa</a>
+                        <a href="/reportar" class="btn btn-secondary">📍 Reportar Problema</a>
+                        <a href="/adicionar_zona" class="btn btn-secondary">🏙️ Adicionar Zona</a>
+                    </div>
+                </div>
+
+                <div class="content">
+                    <h2 class="section-title">As 3 Inovações do Projeto</h2>
+                    <p class="section-subtitle">
+                        O GeoAI-CIM Nampula foi pensado para ser mais do que um simples mapa.
+                        Ele funciona como uma base de inteligência urbana local para apoiar o município na leitura do território,
+                        identificação de problemas e monitorização do crescimento da cidade.
+                    </p>
+
+                    <div class="grid">
+                        <div class="card">
+                            <h3>1) Gémeo Digital Urbano Participativo</h3>
+                            <p>
+                                Reúne o mapa urbano, zonas, reportes dos cidadãos e dados georreferenciados
+                                numa estrutura digital da cidade. O objetivo é representar o território de Nampula
+                                de forma dinâmica e atualizável.
+                            </p>
+                        </div>
+
+                        <div class="card">
+                            <h3>2) IA de Alerta Urbano</h3>
+                            <p>
+                                Analisa automaticamente os reportes recebidos, identifica riscos como inundação,
+                                construção ilegal, falta de infraestrutura e conflito de uso do solo, e gera
+                                prioridade, nível de risco, setor responsável e ação recomendada.
+                            </p>
+                        </div>
+
+                        <div class="card">
+                            <h3>3) Índice de Crescimento Urbano</h3>
+                            <p>
+                                Calcula uma pontuação de 0 a 100 por zona com base em crescimento populacional,
+                                novas construções, infraestruturas e ocupação do solo, ajudando a identificar
+                                áreas estáveis, em expansão, de crescimento alto ou crítico.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="impact">
+                        <h3>Porque este sistema é inovador?</h3>
+                        <p>
+                            O GeoAI-CIM Nampula junta participação cidadã, inteligência artificial e análise territorial
+                            num único sistema local. Isso permite transformar reportes simples em conhecimento urbano útil,
+                            visualizar zonas críticas no mapa e apoiar o planeamento urbano de forma mais rápida,
+                            organizada e orientada por dados.
+                        </p>
+                    </div>
+
+                    <div class="footer">
+                        GeoAI-CIM Nampula — Protótipo de Sistema Inteligente de Planeamento Urbano
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+</body>
+</html>
